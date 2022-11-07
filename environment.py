@@ -19,7 +19,8 @@ class Env:
         # index_1 = np.argwhere(user_map[1, :, :] == 1)
         # not_pos = np.concatenate([index_0, index_1])
         not_pos = np.argwhere(user_map == 1)
-        return self.map[:, 5:-5, 5:-5], not_pos[:, 1:], not_pos[:, 0]
+        is_pos = np.argwhere(user_map == 0)
+        return self.map[:, 5:-5, 5:-5], not_pos[:, 1:], not_pos[:, 0], is_pos[:, 1:]
 
     # 检查是否五子连珠
     def check(self, player, pos_x, pos_y):
