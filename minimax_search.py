@@ -23,15 +23,15 @@ class AgentPlayer:
                     n_pos += move
                     if (-1 in n_pos) or (15 in n_pos):
                         break
-                    if chess_map[1-player, n_pos[0], n_pos[1]] == 1:
+                    if chess_map[1-player, n_pos[0], n_pos[1]] == 1 or chess_map[player, n_pos[0], n_pos[1]] == 0:
                         break
                     if chess_map[player, n_pos[0], n_pos[1]] == 1:
-                        score += 50 ** i
+                        score += 5 * 10 ** i
                     score += 0
             eval_map[pos[0], pos[1]] = score
-            p = np.argmax(eval_map)
-            p = np.unravel_index(p, chess_map[0, :, :].shape)
-            # print(eval_map)
+        p = np.argmax(eval_map)
+        print(np.max(eval_map))
+        p = np.unravel_index(p, chess_map[0, :, :].shape)
         return p
 
 

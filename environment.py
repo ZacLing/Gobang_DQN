@@ -15,12 +15,19 @@ class Env:
 
     def observe(self):
         user_map = self.map[:, 5:-5, 5:-5]
-        # index_0 = np.argwhere(user_map[0, :, :] == 1)
-        # index_1 = np.argwhere(user_map[1, :, :] == 1)
-        # not_pos = np.concatenate([index_0, index_1])
         not_pos = np.argwhere(user_map == 1)
-        is_pos = np.argwhere(user_map == 0)
-        return self.map[:, 5:-5, 5:-5], not_pos[:, 1:], not_pos[:, 0], is_pos[:, 1:]
+        is_pos = self.where_is()
+        print(is_pos)
+        return user_map, not_pos[:, 1:], not_pos[:, 0], is_pos
+
+    def where_is(self):
+        user_map = self.map[:, 5:-5, 5:-5]
+        is_list = []
+        for i in range(15):
+            for j in range(15):
+                if user_map[0, i, j] == 0 and user_map[1, i, j] == 0:
+                    is_list.append([i, j])
+        return np.array(is_list)
 
     # 检查是否五子连珠
     def check(self, player, pos_x, pos_y):
