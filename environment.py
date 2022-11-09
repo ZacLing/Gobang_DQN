@@ -17,7 +17,7 @@ class Env:
         user_map = self.map[:, 5:-5, 5:-5]
         not_pos = np.argwhere(user_map == 1)
         is_pos = self.where_is()
-        print(is_pos)
+        # print(is_pos)
         return user_map, not_pos[:, 1:], not_pos[:, 0], is_pos
 
     def where_is(self):

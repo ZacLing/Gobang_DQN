@@ -30,7 +30,7 @@ class AgentPlayer:
                     score += 0
             eval_map[pos[0], pos[1]] = score
         p = np.argmax(eval_map)
-        print(np.max(eval_map))
+        # print(np.max(eval_map))
         p = np.unravel_index(p, chess_map[0, :, :].shape)
         return p
 
