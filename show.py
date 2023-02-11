@@ -35,7 +35,7 @@ def draw_screen():
     # 在棋盘中心画个小圆表示正中心位置
     pygame.draw.circle(screen, line_color, [27 + 44 * 7, 27 + 44 * 7], 8, 0)
 
-    _, not_pos, player = chess.observe()
+    _, not_pos, player, _ = chess.observe()
     for index in range(len(not_pos)):
         if player[index] == 0:
             color = [255, 255, 255]

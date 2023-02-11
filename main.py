@@ -1,11 +1,14 @@
 import pygame
 import sys
-# 调用常用关键字常量
 from pygame.locals import QUIT, KEYDOWN
 import numpy as np
 from environment import Env
+from AutoPlayer import AutoPlayer
+from minimax_search import AgentPlayer
 
 chess = Env()
+# auto_player = AutoPlayer()
+auto_player = AgentPlayer(strategy='oo')
 # 初始化pygame
 pygame.init()
 # 获取对显示系统的访问，并创建一个窗口screen
@@ -18,8 +21,7 @@ line_color = [0, 0, 0]  # 设置线条颜色，[0,0,0]对应黑色
 mp_0 = np.zeros([15, 15], dtype=int)
 mp_1 = np.zeros([15, 15], dtype=int)
 
-# 判断五子连心
-
+'''
 def check_win(over_pos):
 
     for val in over_pos:
@@ -102,7 +104,7 @@ def check_win(over_pos):
                 if len(pos2) >= 5:
                     return [2, pos2]
     return [0, []]
-
+'''
 
 def find_pos(x, y):  # 找到显示的可以落子的位置
     for i in range(27, 670, 44):
@@ -139,7 +141,7 @@ def draw_screen():
     # 在棋盘中心画个小圆表示正中心位置
     pygame.draw.circle(screen, line_color, [27 + 44 * 7, 27 + 44 * 7], 8, 0)
 
-    _, not_pos, player = chess.observe()
+    _, not_pos, player, _ = chess.observe()
     for index in range(len(not_pos)):
         if player[index] == 0:
             color = [255, 255, 255]
@@ -166,6 +168,7 @@ while game:  # 不断训练刷新画布
 
     draw_screen()
 
+    '''
     # 判断是否存在五子连心
     res = check_win(over_pos)
     if res[0] != 0:
@@ -174,6 +177,7 @@ while game:  # 不断训练刷新画布
         pygame.display.update()  # 刷新显示
 
         continue  # 游戏结束，停止下面的操作
+    '''
 
     # 获取鼠标坐标信息
     x, y = pygame.mouse.get_pos()
@@ -189,10 +193,21 @@ while game:  # 不断训练刷新画布
         if check_over_pos(x, y, over_pos):  # 判断是否可以落子，再落子
             if len(over_pos) % 2 == 0:  # 黑子
                 over_pos.append([[x, y], black_color])
-                chess.move(1, int((x - 27) / 44), int((y - 27) / 44))
+                state = chess.move(0, int((x - 27) / 44), int((y - 27) / 44))
+                if state == True:
+                    continue
+                chess_map, _, _, is_pos = chess.observe()
+                p = auto_player.move_chess(chess_map, is_pos, 1)
+                state = chess.move(1, p[0], p[1])
+                if state == True:
+                    continue
+                over_pos.append([[p[0], p[1]], white_color])
+
+            '''
             else:
                 over_pos.append([[x, y], white_color])
                 chess.move(0, int((x - 27) / 44), int((y - 27) / 44))
+                '''
 
     # 鼠标左键延时作用
     if flag:
