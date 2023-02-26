@@ -3,12 +3,11 @@ import sys
 from pygame.locals import QUIT, KEYDOWN
 import numpy as np
 from environment import Env
-from AutoPlayer import AutoPlayer
-from minimax_search import AgentPlayer
+from AgentPlayer import AgentPlayer
 
 chess = Env()
 # auto_player = AutoPlayer()
-auto_player = AgentPlayer(strategy='oo')
+auto_player = AgentPlayer(strategy='mms', ratio=0.5)
 # 初始化pygame
 pygame.init()
 # 获取对显示系统的访问，并创建一个窗口screen
@@ -21,91 +20,6 @@ line_color = [0, 0, 0]  # 设置线条颜色，[0,0,0]对应黑色
 mp_0 = np.zeros([15, 15], dtype=int)
 mp_1 = np.zeros([15, 15], dtype=int)
 
-'''
-def check_win(over_pos):
-
-    for val in over_pos:
-        x = int((val[0][0] - 27) / 44)
-        y = int((val[0][1] - 27) / 44)
-        if val[1] == white_color:
-            mp_0[x][y] = 1  # 表示白子
-        else:
-            mp_1[x][y] = 1  # 表示黑子
-
-    for i in range(15):
-        pos1 = []
-        pos2 = []
-        for j in range(15):
-            if mp_0[i][j] == 1:
-                pos1.append([i, j])
-            else:
-                pos1 = []
-            if mp_1[i][j] == 1:
-                pos2.append([i, j])
-            else:
-                pos2 = []
-            if len(pos1) >= 5:  # 五子连心
-                return [1, pos1]
-            if len(pos2) >= 5:
-                return [2, pos2]
-
-    for j in range(15):
-        pos1 = []
-        pos2 = []
-        for i in range(15):
-            if mp_0[i][j] == 1:
-                pos1.append([i, j])
-            else:
-                pos1 = []
-            if mp_1[i][j] == 1:
-                pos2.append([i, j])
-            else:
-                pos2 = []
-            if len(pos1) >= 5:
-                return [1, pos1]
-            if len(pos2) >= 5:
-                return [2, pos2]
-    for i in range(15):
-        for j in range(15):
-            pos1 = []
-            pos2 = []
-            for k in range(15):
-                if i + k >= 15 or j + k >= 15:
-                    break
-                if mp_0[i + k][j + k] == 1:
-                    pos1.append([i + k, j + k])
-                else:
-                    pos1 = []
-                if mp_1[i + k][j + k] == 1:
-                    pos2.append([i + k, j + k])
-                else:
-                    pos2 = []
-                if len(pos1) >= 5:
-                    return [1, pos1]
-                if len(pos2) >= 5:
-                    return [2, pos2]
-    for i in range(15):
-        for j in range(15):
-            pos1 = []
-            pos2 = []
-            for k in range(15):
-                if i + k >= 15 or j - k < 0:
-                    break
-                if mp_0[i + k][j - k] == 1:
-                    pos1.append([i + k, j - k])
-                else:
-                    pos1 = []
-                if mp_1[i + k][j - k] == 1:
-                    pos2.append([i + k, j - k])
-                else:
-                    pos2 = []
-                if len(pos1) >= 5:
-                    return [1, pos1]
-                if len(pos2) >= 5:
-                    return [2, pos2]
-    return [0, []]
-'''
-
 def find_pos(x, y):  # 找到显示的可以落子的位置
     for i in range(27, 670, 44):
         for j in range(27, 670, 44):
@@ -116,7 +30,6 @@ def find_pos(x, y):  # 找到显示的可以落子的位置
             if x >= L1 and x <= L2 and y >= R1 and y <= R2:
                 return i, j
     return x, y
-
 
 def check_over_pos(x, y, over_pos):  # 检查当前的位置是否已经落子
     for val in over_pos:
@@ -168,17 +81,6 @@ while game:  # 不断训练刷新画布
 
     draw_screen()
 
-    '''
-    # 判断是否存在五子连心
-    res = check_win(over_pos)
-    if res[0] != 0:
-        for pos in res[1]:
-            pygame.draw.rect(screen, [238, 48, 167], [pos[0] * 44 + 27 - 22, pos[1] * 44 + 27 - 22, 44, 44], 2, 1)
-        pygame.display.update()  # 刷新显示
-
-        continue  # 游戏结束，停止下面的操作
-    '''
-
     # 获取鼠标坐标信息
     x, y = pygame.mouse.get_pos()
 
@@ -193,11 +95,13 @@ while game:  # 不断训练刷新画布
         if check_over_pos(x, y, over_pos):  # 判断是否可以落子，再落子
             if len(over_pos) % 2 == 0:  # 黑子
                 over_pos.append([[x, y], black_color])
-                state = chess.move(0, int((x - 27) / 44), int((y - 27) / 44))
+                x_pos = int((x - 27) / 44)
+                y_pos = int((y - 27) / 44)
+                state = chess.move(0, x_pos, y_pos)
                 if state == True:
                     continue
                 chess_map, _, _, is_pos = chess.observe()
-                p = auto_player.move_chess(chess_map, is_pos, 1)
+                p = auto_player.move_chess(x_pos, y_pos)
                 state = chess.move(1, p[0], p[1])
                 if state == True:
                     continue

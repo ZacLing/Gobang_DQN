@@ -15,6 +15,7 @@ class Env:
 
     def observe(self):
         user_map = self.map[:, 5:-5, 5:-5]
+
         not_pos = np.argwhere(user_map == 1)
         is_pos = self.where_is()
         # print(is_pos)
